@@ -147,19 +147,28 @@ abstract class CsvUtility
     }
 
     /**
+     * @return \Generator
+     */
+    protected function iterateData()
+    {
+        foreach ($this->getRawData() as $dataItem) {
+            yield $dataItem;
+        }
+    }
+
+    /**
      * @return string
      */
     protected function generateFileData()
     {
         $contents = '';
-        $data = $this->getRawData();
 
         if (!empty($this->getHeaderFields())) {
             $this->putCSV($this->getHandle(), $this->getHeaderFields());
         }
 
-        foreach ($data as $d) {
-            $this->addFileContents($d);
+        foreach ($this->iterateData() as $data) {
+            $this->addFileContents($data);
         }
         $handle = $this->getHandle();
         rewind($handle);
@@ -173,8 +182,18 @@ abstract class CsvUtility
     }
 
     /**
+     * @param array $data
+     * @return \Generator
+     */
+    protected function iterateRowData($data = [])
+    {
+        foreach ($data as $key => $val) {
+            yield $val;
+        }
+    }
+
+    /**
      * @param array $row
-     * @return $this
      */
     protected function addFileContents($row = [])
     {
@@ -183,22 +202,13 @@ abstract class CsvUtility
 
         $row = $this->preProcessData($row);
 
-        $data = [];
         if ((array)$row === $row) {
-
-            $addRowData = function ($key, $val) use (&$data, &$deliminator, &$enclosure) {
-                $data[] = $val;
-            };
-
-            foreach ($row as $key => $val) {
-                $addRowData($key, $val);
+            $data = [];
+            foreach ($this->iterateRowData($row) as $dataItem) {
+                $data[] = $dataItem;
             }
-
             $this->putCSV($this->getHandle(), $data, $deliminator, $enclosure);
-
         }
-
-        return $this;
     }
 
     /**
@@ -206,10 +216,11 @@ abstract class CsvUtility
      * @param $data
      * @param string $deliminator
      * @param string $enclosure
+     * @return \Generator
      */
     protected function putCSV($handle, $data, $deliminator = ',', $enclosure = '"')
     {
-        fputcsv($handle, $data, $deliminator, $enclosure);
+        yield fputcsv($handle, $data, $deliminator, $enclosure);
     }
 
 

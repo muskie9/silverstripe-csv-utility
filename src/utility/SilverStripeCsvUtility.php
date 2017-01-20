@@ -229,6 +229,16 @@ class SilverStripeCsvUtility extends CsvUtility
     }
 
     /**
+     * @return \Generator
+     */
+    protected function iteratePattern()
+    {
+        foreach ($this->getPattern() as $key => $val) {
+            yield [$key, $val];
+        }
+    }
+
+    /**
      * Allow for traversing a single has_one relation level through dot notation
      *
      * @param $data
@@ -238,8 +248,6 @@ class SilverStripeCsvUtility extends CsvUtility
     {
         $data = parent::preProcessData($data);
         $arrayData = [];
-
-        $pattern = $this->getPattern();
 
         $relationName = $this->getRelationName();
 
@@ -258,8 +266,8 @@ class SilverStripeCsvUtility extends CsvUtility
                 $arrayData[] = $value;
             };
 
-            foreach ($pattern as $key => $val) {
-                $addToArrayData($key, $val);
+            foreach ($this->iteratePattern() as $mapping) {
+                $addToArrayData($mapping[0], $mapping[1]);
             }
         }
 
