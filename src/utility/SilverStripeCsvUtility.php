@@ -209,7 +209,7 @@ class SilverStripeCsvUtility extends CsvUtility
     public function getImplementsUtilInterface($extensions = [])
     {
         $implements = false;
-        foreach ($extensions as $key => $val) {
+        foreach ($extensions as $key => &$val) {
             if (!$implements) {
                 if (in_array($this->getUtilityInterface(), class_implements($key))) $implements = true;
             }
@@ -233,7 +233,7 @@ class SilverStripeCsvUtility extends CsvUtility
      */
     protected function iteratePattern()
     {
-        foreach ($this->getPattern() as $key => $val) {
+        foreach ($this->getPattern() as $key => &$val) {
             yield [$key, $val];
         }
     }

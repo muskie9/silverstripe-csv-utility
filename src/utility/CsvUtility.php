@@ -151,7 +151,7 @@ abstract class CsvUtility
      */
     protected function iterateData()
     {
-        foreach ($this->getRawData() as $dataItem) {
+        foreach ($this->getRawData() as &$dataItem) {
             yield $dataItem;
         }
     }
@@ -187,7 +187,7 @@ abstract class CsvUtility
      */
     protected function iterateRowData($data = [])
     {
-        foreach ($data as $key => $val) {
+        foreach ($data as $key => &$val) {
             yield $val;
         }
     }
